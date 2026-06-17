@@ -1,0 +1,116 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Clientes — Bembos Admin{% endblock %}
+{% block page_title %}Clientes{% endblock %}
+
+{% block extra_style %}
+.toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+.search-bar { display:flex; align-items:center; gap:10px; background:#fff; border:2px solid #e0ddd6; border-radius:10px; padding:10px 16px; }
+.search-bar input { border:none; outline:none; font-family:'Nunito',sans-serif; font-size:.92rem; background:transparent; width:220px; }
+.search-bar i { color:#aaa; }
+.btn-action { padding:10px 22px; background:var(--red); color:#fff; border:none; border-radius:10px; font-family:'Nunito',sans-serif; font-size:.88rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px; text-decoration:none; }
+.btn-action:hover { background:var(--red-dk); color:#fff; }
+.table-wrap { background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+table { width:100%; border-collapse:collapse; }
+thead { background:var(--gray); }
+th { padding:14px 18px; text-align:left; font-size:.75rem; font-weight:800; color:#888; text-transform:uppercase; letter-spacing:.08em; }
+td { padding:14px 18px; font-size:.88rem; border-bottom:1px solid var(--gray); vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:#fafaf8; }
+.client-cell { display:flex; align-items:center; gap:12px; }
+.avatar-circle { width:38px; height:38px; border-radius:50%; background:var(--red); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.9rem; flex-shrink:0; }
+.client-name { font-weight:700; }
+.client-email { font-size:.78rem; color:#888; }
+.pill { font-size:.72rem; font-weight:700; padding:4px 12px; border-radius:20px; }
+.pill-green { background:#e8f8f0; color:#27ae60; }
+.pill-gray  { background:#f0ede8; color:#999; }
+.action-btns { display:flex; gap:8px; align-items:center; }
+.btn-edit { padding:7px 14px; background:var(--yellow); color:var(--dark); border:none; border-radius:7px; font-size:.78rem; font-weight:700; cursor:pointer; text-decoration:none; display:inline-block; }
+.btn-edit:hover { opacity:.85; }
+.btn-del  { padding:7px 14px; background:#fdeaea; color:var(--red); border:none; border-radius:7px; font-size:.78rem; font-weight:700; cursor:pointer; }
+.btn-del:hover { background:#f5c6c6; }
+.flash-ok  { background:#e8f8f0; color:#27ae60; border-radius:10px; padding:12px 18px; margin-bottom:18px; font-weight:700; }
+.flash-err { background:#fdeaea; color:var(--red); border-radius:10px; padding:12px 18px; margin-bottom:18px; font-weight:700; }
+.empty { text-align:center; color:#aaa; padding:40px; }
+{% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for cat, msg in messages %}
+    <div class="flash-{{ 'ok' if cat == 'success' else 'err' }}">{{ msg }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="toolbar">
+  <div class="search-bar">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" id="search" placeholder="Buscar cliente…" oninput="filtrar()"/>
+  </div>
+  <a href="{{ url_for('admin_nuevo_cliente') }}" class="btn-action">
+    <i class="fa-solid fa-plus"></i> Nuevo Cliente
+  </a>
+</div>
+
+<div class="table-wrap">
+  <table id="tabla">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Teléfono</th>
+        <th>Distrito</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in clientes %}
+      <tr>
+        <td>
+          <div class="client-cell">
+            <div class="avatar-circle">{{ c.nombre[0].upper() }}</div>
+            <div>
+              <div class="client-name">{{ c.nombre }}</div>
+              <div class="client-email">{{ c.email }}</div>
+            </div>
+          </div>
+        </td>
+        <td>{{ c.telefono or '—' }}</td>
+        <td>{{ c.distrito or '—' }}</td>
+        <td>
+          <span class="pill {{ 'pill-green' if c.activo else 'pill-gray' }}">
+            {{ 'Activo' if c.activo else 'Inactivo' }}
+          </span>
+        </td>
+        <td>
+          <div class="action-btns">
+            <a href="{{ url_for('admin_editar_cliente', id=c.id) }}" class="btn-edit">
+              <i class="fa-solid fa-pen"></i> Editar
+            </a>
+            <form action="{{ url_for('admin_eliminar_cliente', id=c.id) }}" method="POST"
+                  onsubmit="return confirm('¿Eliminar a {{ c.nombre }}?')">
+              <button type="submit" class="btn-del"><i class="fa-solid fa-trash"></i></button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5" class="empty">
+          No hay clientes registrados. <a href="{{ url_for('admin_nuevo_cliente') }}">Agrega el primero</a>.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filtrar() {
+  const q = document.getElementById('search').value.toLowerCase();
+  document.querySelectorAll('#tabla tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Admin - Bembos{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --red:    #D62B2B;
+      --red-dk: #A81F1F;
+      --yellow: #F5C518;
+      --cream:  #FFF8ED;
+      --dark:   #1A1A1A;
+      --gray:   #F0EDE8;
+      --text:   #2D2D2D;
+      --sidebar-w: 250px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Nunito',sans-serif; background:var(--cream); color:var(--text); display:flex; min-height:100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width:var(--sidebar-w); background:var(--dark); color:#fff;
+      display:flex; flex-direction:column; position:fixed; height:100vh;
+      overflow-y:auto; z-index:100;
+    }
+    .sidebar-logo {
+      padding:24px 20px; border-bottom:1px solid #333;
+      display:flex; align-items:center; gap:12px;
+    }
+    .sidebar-logo img { width:48px; height:48px; border-radius:50%; object-fit:cover; }
+    .sidebar-logo span { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; color:var(--yellow); letter-spacing:2px; }
+    .sidebar-logo small { display:block; font-size:.7rem; color:#aaa; margin-top:-4px; }
+
+    .nav-group { padding:20px 0; }
+    .nav-label { font-size:.65rem; font-weight:700; color:#666; letter-spacing:.12em; text-transform:uppercase; padding:0 20px 8px; }
+    .nav-item { display:flex; align-items:center; gap:12px; padding:11px 20px; color:#ccc; text-decoration:none; font-size:.9rem; font-weight:600; transition:.2s; cursor:pointer; border-left:3px solid transparent; }
+    .nav-item:hover, .nav-item.active { background:#2a2a2a; color:var(--yellow); border-left-color:var(--yellow); }
+    .nav-item i { width:18px; text-align:center; }
+
+    /* MAIN */
+    .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; }
+
+    /* TOPBAR */
+    .topbar {
+      background:#fff; border-bottom:2px solid var(--red);
+      padding:0 28px; height:64px; display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:50;
+    }
+    .topbar-title { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--red); letter-spacing:1px; }
+    .topbar-right { display:flex; align-items:center; gap:16px; }
+    .avatar { width:38px; height:38px; border-radius:50%; background:var(--red); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.95rem; }
+    .badge { background:var(--yellow); color:var(--dark); font-size:.7rem; font-weight:700; padding:2px 8px; border-radius:20px; }
+
+    /* CONTENT */
+    .content { padding:28px; flex:1; }
+    {% block extra_style %}{% endblock %}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Bembos_logo.svg/200px-Bembos_logo.svg.png" alt="Bembos"/>
+    <div>
+      <span>Bembos</span>
+      <small>Panel Admin</small>
+    </div>
+  </div>
+
+  <nav class="nav-group">
+    <div class="nav-label">Principal</div>
+    <a href="/admin/dashboard" class="nav-item {% if active=='dashboard' %}active{% endif %}"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <a href="/admin/clientes" class="nav-item {% if active=='clientes' %}active{% endif %}"><i class="fa-solid fa-users"></i> Clientes</a>
+  </nav>
+
+  <nav class="nav-group">
+    <div class="nav-label">Carta</div>
+    <a href="/admin/productos" class="nav-item {% if active=='productos' %}active{% endif %}"><i class="fa-solid fa-burger"></i> Productos</a>
+    <a href="/admin/servicios" class="nav-item {% if active=='servicios' %}active{% endif %}"><i class="fa-solid fa-concierge-bell"></i> Servicios</a>
+  </nav>
+
+  <nav class="nav-group">
+    <div class="nav-label">Sistema</div>
+    <a href="/admin/usuarios" class="nav-item {% if active=='usuarios' %}active{% endif %}"><i class="fa-solid fa-user-shield"></i> Usuarios</a>
+    <a href="/logout" class="nav-item"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</a>
+  </nav>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <span class="topbar-title">{% block page_title %}Panel de Administración{% endblock %}</span>
+    <div class="topbar-right">
+      <span class="badge"><i class="fa-solid fa-fire"></i> En línea</span>
+      <div class="avatar">A</div>
+    </div>
+  </header>
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>
